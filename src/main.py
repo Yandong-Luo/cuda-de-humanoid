@@ -275,6 +275,10 @@ def move(trajectory_type:str,
     left_foot = robot_mpc.offline_left_foot_trajectory
     right_foot = robot_mpc.offline_right_foot_trajectory
     com = robot_mpc.offline_com_trajectory
+    
+    print("left foot ->", left_foot)
+    print("right foot ->", right_foot)
+    print("com ->", com)
 
     corresp_com_left = []
     corresp_com_right = []
