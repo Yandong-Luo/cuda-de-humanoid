@@ -1,6 +1,6 @@
 qpsolvers
 loop_rate_limiters==0.4.0
-pin==2.6.18
+pin==2.7.0
 pin-pink==0.11.0
 meshcat_shapes==0.3.0
 matplotlib
