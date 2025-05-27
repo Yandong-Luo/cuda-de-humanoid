@@ -5,4 +5,4 @@ pin-pink==0.11.0
 meshcat_shapes==0.3.0
 matplotlib
 h5py
-robot_descriptions==1.5.0
+robot_descriptions==1.7.0

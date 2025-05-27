@@ -69,8 +69,8 @@ def move_foot(
             task.set_target(task_target)
         if visualizer:
             visualizer.viewer["com"].set_transform(com_target.np)
-            visualizer.viewer["r_ankle_target"].set_transform(right_foot_target.np)
-            visualizer.viewer["r_ankle"].set_transform(
+            visualizer.viewer["right_foot_virtual_link_target"].set_transform(right_foot_target.np)
+            visualizer.viewer["right_foot_virtual_link"].set_transform(
                 configuration.get_transform_frame_to_world(foot_task.body).np
             )
         # Compute velocity and integrate it into next configuration
@@ -95,7 +95,7 @@ def move_foot(
         t += dt
 
 
-def get_foot_curve(src: np.ndarray, dst: np.ndarray, dz: Optional[float] = 0.15):
+def get_foot_curve(src: np.ndarray, dst: np.ndarray, dz: Optional[float] = 0.05):
     """
     Compute a Bezier curve for the foot trajectory given the source
     and destination positions.

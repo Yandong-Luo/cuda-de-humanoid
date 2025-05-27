@@ -31,6 +31,7 @@ from move_foot import (
 
 try:
     from robot_descriptions.loaders.pinocchio import load_robot_description
+    # from robot_descriptions.loaders.yourdfpy import load_robot_description
 except ModuleNotFoundError:
     raise ModuleNotFoundError(
         "Examples need robot_descriptions, " "try `pip install robot_descriptions`"
@@ -38,7 +39,12 @@ except ModuleNotFoundError:
 
 
 
-robot = load_robot_description("jvrc_description", root_joint=pin.JointModelFreeFlyer())
+robot = load_robot_description("g1_description", root_joint=pin.JointModelFreeFlyer())
+
+print("Available frames:")
+for i, frame in enumerate(robot.model.frames):
+    print(f"  {i}: {frame.name}")
+    
 viz = pin.visualize.MeshcatVisualizer(
     robot.model, robot.collision_model, robot.visual_model
 )
@@ -75,27 +81,6 @@ list_data = [
     0.00000000e00,
     0.00000000e00,
     0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
-    0.00000000e00,
 ]
 
 r = R.from_euler('z', 1.58432257)  # roll of 1.58 radians
@@ -120,13 +105,13 @@ h = (
 )  # (m)
 foot_dimensions = [
     0.225,
-    # np.abs(configuration.get_transform_frame_to_world("r_ankle").copy().translation[1]),
+    # np.abs(configuration.get_transform_frame_to_world("right_foot_virtual_link").copy().translation[1]),
     0.1,
 ]
 # length(x), width(y)
 spacing = (
     0.0,
-    # np.abs(configuration.get_transform_frame_to_world("r_ankle").copy().translation[1] + .3),
+    # np.abs(configuration.get_transform_frame_to_world("right_foot_virtual_link").copy().translation[1] + .3),
     0.1,
 )
 # lateral spacing between feet
@@ -347,14 +332,14 @@ def move(trajectory_type:str,
     # print("com right -> ", corresp_com_right)
 
     # define the tasks
-    left_foot_task = FrameTask("l_ankle", position_cost=100.0, orientation_cost=1.0)
+    left_foot_task = FrameTask("left_foot_virtual_link", position_cost=100.0, orientation_cost=1.0)
 
     pelvis_task = FrameTask(
-        "PELVIS_S",
+        "pelvis",
         position_cost=[0.0, 0.0, 1.0],
         orientation_cost=[100.0, 100.0, 100.0],  # 3.0 before
     )
-    right_foot_task = FrameTask("r_ankle", position_cost=100.0, orientation_cost=1.0)
+    right_foot_task = FrameTask("right_foot_virtual_link", position_cost=100.0, orientation_cost=1.0)
     com_task = ComTask(position_cost=[1.0, 10.0, 1.0])
     posture_task = PostureTask(
         cost=1e-1,  # 1e-1
@@ -370,9 +355,9 @@ def move(trajectory_type:str,
     # setting the target of the tasks
     pelvis_task.set_target_from_configuration(configuration)
     com_task.set_target_from_configuration(configuration)
-    left_foot_task.set_target(configuration.get_transform_frame_to_world("l_ankle"))
+    left_foot_task.set_target(configuration.get_transform_frame_to_world("left_foot_virtual_link"))
 
-    right_foot_task.set_target(configuration.get_transform_frame_to_world("r_ankle"))
+    right_foot_task.set_target(configuration.get_transform_frame_to_world("right_foot_virtual_link"))
 
     # Select QP solver
     solver = qpsolvers.available_solvers[0]
@@ -380,18 +365,18 @@ def move(trajectory_type:str,
         solver = "quadprog"
     viewer = viz.viewer
     # visualizing the frames of joints and their targets in meshcat
-    meshcat_shapes.frame(viewer["r_ankle"], opacity=1.0)
-    meshcat_shapes.frame(viewer["r_ankle_target"], opacity=0.5)
-    meshcat_shapes.frame(viewer["l_ankle"], opacity=1.0)
-    meshcat_shapes.frame(viewer["l_ankle_target"], opacity=0.5)
+    meshcat_shapes.frame(viewer["right_foot_virtual_link"], opacity=1.0)
+    meshcat_shapes.frame(viewer["right_foot_virtual_link_target"], opacity=0.5)
+    meshcat_shapes.frame(viewer["left_foot_virtual_link"], opacity=1.0)
+    meshcat_shapes.frame(viewer["left_foot_virtual_link_target"], opacity=0.5)
     meshcat_shapes.frame(viewer["com"], opacity=1.0, axis_length=1.0)
     frequency = 50.0
     rate = RateLimiter(frequency=frequency)
     # the first position of the right foot
-    src_r = configuration.get_transform_frame_to_world("r_ankle").copy()
+    src_r = configuration.get_transform_frame_to_world("right_foot_virtual_link").copy()
     src_r = src_r.translation
     # the first position of the left foot
-    src_l = configuration.get_transform_frame_to_world("l_ankle").copy()
+    src_l = configuration.get_transform_frame_to_world("left_foot_virtual_link").copy()
     src_l = src_l.translation
     time = 0.0
     file=None
