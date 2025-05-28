@@ -45,6 +45,11 @@ print("Available frames:")
 for i, frame in enumerate(robot.model.frames):
     print(f"  {i}: {frame.name}")
     
+print("Available joints:")
+for i, name in enumerate(robot.model.names):
+    print(f"  {i}: {name}")
+
+    
 viz = pin.visualize.MeshcatVisualizer(
     robot.model, robot.collision_model, robot.visual_model
 )
@@ -53,7 +58,7 @@ robot.setVisualizer(viz, init=False)
 list_data = [
     0.29357406,
     0.29125562,
-    8.69033893e-03,
+    0.0,
     7.94971455e-05,
     -2.00299738e-03,
     -5.32537164e-06,
@@ -83,15 +88,16 @@ list_data = [
     0.00000000e00,
 ]
 
-r = R.from_euler('z', 1.58432257)  # roll of 1.58 radians
-quat = r.as_quat()  # returns [x, y, z, w]
+# r = R.from_euler('z', 1.58432257)  # roll of 1.58 radians
+# quat = r.as_quat()  # returns [x, y, z, w]
 
-# Update quaternion in list_data
-list_data[3:7] = quat
+# # Update quaternion in list_data
+# list_data[3:7] = quat
 
 
 q_ref = np.array(list_data)
-robot.q0 = q_ref
+# robot.q0 = q_ref
+robot.q0 = np.clip(q_ref, robot.model.lowerPositionLimit, robot.model.upperPositionLimit)
 configuration = Configuration(robot.model, robot.data, robot.q0)
 
 T_pred = 100e-3  # (s) Sampling time for prediction horizon
@@ -277,6 +283,15 @@ def move(trajectory_type:str,
     left_foot, right_foot, com = generate_footstep_and_com_trajectory(
         sol_x, sol_u, n_repeat=1, start_with_left=False
     )
+    
+    # yaw_angle = sol_x[-1]
+    # quat_xyzw = R.from_euler('z', yaw_angle).as_quat()
+    # new_quat = np.array([quat_xyzw[3], quat_xyzw[0], quat_xyzw[1], quat_xyzw[2]])
+    
+    # configuration.q[:3] = np.array([sol_x[-1, 0], sol_x[-1, 1], configuration.q[2]])
+    # configuration.q[3:7] = new_quat  # Update the quaternion part of the configuration
+    # configuration.update()
+    
     
     print("left_foot", left_foot)
     print("right_foot", right_foot)

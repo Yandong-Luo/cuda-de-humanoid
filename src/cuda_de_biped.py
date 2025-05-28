@@ -49,7 +49,7 @@ def generate_footstep_and_com_trajectory(sol_x, sol_u, n_repeat=8, start_with_le
         # absolute_foot_yaw = com_yaw + foot_dyaw
         # yaw += foot_dyaw
         yaw = sol_x[i, 4]
-        foot_pos = (sol_x[i, 0] + foot_dx, sol_x[i, 1] + foot_dy, yaw+foot_dyaw)
+        foot_pos = (sol_x[i, 0] + foot_dx, sol_x[i, 1] + foot_dy, yaw)
 
         # Update only the swinging foot
         if (i % 2 == 0 and start_with_left) or (i % 2 == 1 and not start_with_left):
