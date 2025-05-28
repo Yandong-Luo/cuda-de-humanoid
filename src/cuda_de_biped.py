@@ -74,6 +74,47 @@ def generate_footstep_and_com_trajectory(sol_x, sol_u, n_repeat=8, start_with_le
 
     return left_foot, right_foot, com
 
+# def generate_footstep_and_com_trajectory(sol_x, sol_u, n_repeat=8, start_with_left=True):
+#     """
+#     Generate left/right foot trajectories and CoM trajectory from optimization outputs.
+
+#     Returns:
+#         left_foot, right_foot, com
+#         Each is a list of length N * n_repeat + 1
+#     """
+#     left_foot = []
+#     right_foot = []
+#     com = []
+
+#     current_left = None
+#     current_right = None
+
+#     for i in range(len(sol_u)):
+#         com_xy = (sol_x[i, 0], sol_x[i, 1])
+#         foot_dx, foot_dy, foot_dyaw = sol_u[i]
+#         yaw = sol_x[i, 4]
+#         foot_pos = (sol_x[i, 0] + foot_dx, sol_x[i, 1] + foot_dy, yaw)
+
+#         # Step decision based on parity and starting foot
+#         if (i % 2 == 0 and start_with_left) or (i % 2 == 1 and not start_with_left):
+#             current_left = foot_pos
+#         else:
+#             current_right = foot_pos
+
+#         for _ in range(n_repeat):
+#             com.append(com_xy)
+#             left_foot.append(current_left if current_left else left_foot[-1])
+#             right_foot.append(current_right if current_right else right_foot[-1])
+
+#     # Append the last step's CoM and foot placements again
+#     com.append((sol_x[-1, 0], sol_x[-1, 1]))
+#     left_foot.append(current_left)
+#     right_foot.append(current_right)
+
+#     return left_foot, right_foot, com
+
+
+
 
 
 def solve_footstep_planning_with_cuda(x0_MLD, N, nx=5, nu=3):

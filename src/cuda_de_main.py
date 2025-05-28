@@ -88,11 +88,11 @@ list_data = [
     0.00000000e00,
 ]
 
-# r = R.from_euler('z', 1.58432257)  # roll of 1.58 radians
-# quat = r.as_quat()  # returns [x, y, z, w]
+r = R.from_euler('z', 1.58432257)  # roll of 1.58 radians
+quat = r.as_quat()  # returns [x, y, z, w]
 
-# # Update quaternion in list_data
-# list_data[3:7] = quat
+# Update quaternion in list_data
+list_data[3:7] = quat
 
 
 q_ref = np.array(list_data)
@@ -284,14 +284,6 @@ def move(trajectory_type:str,
         sol_x, sol_u, n_repeat=1, start_with_left=False
     )
     
-    # yaw_angle = sol_x[-1]
-    # quat_xyzw = R.from_euler('z', yaw_angle).as_quat()
-    # new_quat = np.array([quat_xyzw[3], quat_xyzw[0], quat_xyzw[1], quat_xyzw[2]])
-    
-    # configuration.q[:3] = np.array([sol_x[-1, 0], sol_x[-1, 1], configuration.q[2]])
-    # configuration.q[3:7] = new_quat  # Update the quaternion part of the configuration
-    # configuration.update()
-    
     
     print("left_foot", left_foot)
     print("right_foot", right_foot)
@@ -315,6 +307,30 @@ def move(trajectory_type:str,
     
     # print(len(left_foot))  # e.g. 120 or 160?
     # print(len(com))        # e.g. 160?
+    
+    com_x = [c[0] for c in com]
+    com_y = [c[1] for c in com]
+
+    left_x = [f[0] for f in left_foot if f is not None]
+    left_y = [f[1] for f in left_foot if f is not None]
+
+    right_x = [f[0] for f in right_foot if f is not None]
+    right_y = [f[1] for f in right_foot if f is not None]
+
+    # Plot
+    plt.figure(figsize=(8, 6))
+    plt.plot(com_x, com_y, label='CoM Trajectory', color='red', linewidth=2)
+    plt.plot(left_x, left_y, 'o-', label='Left Footsteps', color='blue')
+    plt.plot(right_x, right_y, 'o-', label='Right Footsteps', color='green')
+
+    plt.xlabel('x (m)')
+    plt.ylabel('y (m)')
+    plt.title('Footstep and CoM Trajectories')
+    plt.legend()
+    plt.axis('equal')
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
 
 
     corresp_com_left = []
@@ -352,7 +368,7 @@ def move(trajectory_type:str,
     pelvis_task = FrameTask(
         "pelvis",
         position_cost=[0.0, 0.0, 1.0],
-        orientation_cost=[100.0, 100.0, 100.0],  # 3.0 before
+        orientation_cost=[100.0, 100.0, 0.0],  # 3.0 before
     )
     right_foot_task = FrameTask("right_foot_virtual_link", position_cost=100.0, orientation_cost=1.0)
     com_task = ComTask(position_cost=[1.0, 10.0, 1.0])
